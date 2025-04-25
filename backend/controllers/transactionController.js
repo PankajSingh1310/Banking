@@ -37,6 +37,8 @@ const payment = async (req, res) => {
         senderUser.balance -= amount;
         receiverUser.balance += amount;
 
+        senderUser.transactions.push(transaction._id);
+        receiverUser.transactions.push(transaction._id);
         // Save all
         await senderUser.save();
         await receiverUser.save();
