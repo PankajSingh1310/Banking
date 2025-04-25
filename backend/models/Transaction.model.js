@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    reciever: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    balance: {
+    receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    amount: {
         type: Number,
         default: 0, // starts with zero balance
     }

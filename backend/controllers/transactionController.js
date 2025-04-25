@@ -1,37 +1,54 @@
 const User = require('../models/User.model'); // Import the User model
 const Transaction = require('../models/Transaction.model'); // Import the Transaction model
 
-const TransactionController = {
-    async createTransaction(req, res) {
-        try {
-            const { sender, reciever, amount } = req.body; // Extract sender, reciever, and amount from request body
+const payment = async (req, res) => {
+    try {
+        const { sender, receiver, amount } = req.body;
 
-            // Validate the input data
-            if (!sender || !reciever || !amount) {
-                return res.status(400).json({ message: 'Sender, reciever and amount are required' });
-            }
-
-            // Find the sender and reciever users in the database
-            const senderUser = await User.findById(sender);
-            const recieverUser = await User.findById(reciever);
-
-            if (!senderUser || !recieverUser) {
-                return res.status(404).json({ message: 'Sender or reciever not found' });
-            }
-
-            // Create a new transaction record
-            const transaction = new Transaction({
-                sender: senderUser._id,
-                reciever: recieverUser._id,
-                amount: amount,
-            });
-
-            await transaction.save(); // Save the transaction to the database
-
-            return res.status(201).json({ message: 'Transaction created successfully', transaction });
-        } catch (error) {
-            console.error(error); // Log the error for debugging
-            return res.status(500).json({ message: 'Internal server error' }); // Handle server errors
+        // Validate the input data
+        if (!sender || !receiver || !amount) {
+            return res.status(400).json({ message: 'Sender, receiver and amount are required' });
         }
-    }, 
-}
+
+        // Find users
+        const senderUser = await User.findById(sender);
+        const receiverUser = await User.findById(receiver);
+
+        if (!senderUser || !receiverUser) {
+            return res.status(404).json({ message: 'Sender or receiver not found' });
+        }
+
+        if (senderUser._id.equals(receiverUser._id)) {
+            return res.status(400).json({ message: 'Sender and receiver cannot be the same' });
+        }
+
+        if (senderUser.balance < amount) {
+            return res.status(400).json({ message: 'Insufficient balance' });
+        }
+
+        // Transaction document
+        const transaction = new Transaction({
+            sender: senderUser._id,
+            receiver: receiverUser._id,
+            amount: amount
+        });
+
+        // Update balances
+        senderUser.balance -= amount;
+        receiverUser.balance += amount;
+
+        // Save all
+        await senderUser.save();
+        await receiverUser.save();
+        await transaction.save();
+
+        return res.status(201).json({ message: 'Transaction completed successfully', transaction });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
+module.exports = {payment}; // Export the TransactionController object for use in other files

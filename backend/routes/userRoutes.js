@@ -8,5 +8,6 @@ router.get('/register', userController.registerUser); // Route for user registra
 router.get('/login', userController.loginUser); // Route for user login 
 router.get('/logout', userController.logoutUser); // Route for user logout
 router.get('/getUser', verifyToken, userController.getUserProfile); // Route to get user details
+router.get('/history', verifyToken, userController.historyUser); // Route to update user details
 
 module.exports = router; // Export the router for use in other files

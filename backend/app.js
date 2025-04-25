@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const cors = require('cors');
 const cookieParser = require('cookie-parser'); // For parsing cookies
 const userRoutes = require('./routes/userRoutes'); // Import user routes
+const transactionRoutes = require('./routes/transactionRoutes'); // Import transaction routes
 
 const app = express();
 app.use(cors()); // Enable CORS for all routes
@@ -16,6 +17,7 @@ app.use(express.json()); // Middleware to parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded requests    
 
 app.use("/api/users", userRoutes); // Use user routes for all requests starting with /api/users
+app.use("/api/transaction", transactionRoutes); // Use user routes for all requests starting with /api/users
 
 // Basic route
 app.get('/', (req, res) => {

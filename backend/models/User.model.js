@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0, // starts with zero balance
   },
+  transactions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Transaction', // reference to the Transaction model
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now, // auto-set current date/time
